@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Career Explorer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e7ff;
+      font-family: 'Orbitron', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .glow {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+    .question-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .question-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 30px rgba(59, 130, 246, 0.7);
+    }
+    .suggestion {
+      color: #a5b4fc;
+      cursor: pointer;
+      text-decoration: underline;
+      background: rgba(26, 26, 46, 0.8);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+    .suggestion:hover {
+      color: #C7F7F7;
+      background: #3b82f6;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+    .pulse-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+      opacity: 0.3;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 0.3; }
+    }
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #1a1a2e;
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 90%;
+      max-height: 80%;
+      overflow-y: auto;
+      border: 2px solid #3b82f6;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #e0e7ff;
+    }
+    textarea {
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #3b82f6;
+    }
+    textarea:focus {
+      outline: none;
+      ring: 2px solid #60a5fa;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: help;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background: #1a1a2e;
+      color: #e0e7ff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 8px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 1px solid #3b82f6;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    .char-counter {
+      color: #C7F7F7;
+      font-size: 0.875rem;
+      margin-top: 4px;
+    }
+    .read-aloud {
+      cursor: pointer;
+      color: #a5b4fc;
+      margin-left: 8px;
+      font-size: 0.875rem;
+    }
+    .read-aloud:hover {
+      color: #C7F7F7;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+  <canvas id="starfield"></canvas>
+  <div class="pulse-bg"></div>
+  <div class="max-w-4xl w-full">
+    <div class="flex justify-end mb-4">
+      <select id="language-toggle" class="p-2 rounded-lg bg-gray-800 text-white border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Select language">
+        <option value="standard">Standard English</option>
+        <option value="simplified">Simplified English</option>
+      </select>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold text-center mb-8 text-blue-300 glow">
+      Career Explorer: Chart Your Future
+    </h1>
+    <p class="text-center text-lg mb-12 text-indigo-200" id="intro-text">
+      What is your career and its impact on the world?
+    </p>
+
+    <!-- Question 1 & 2 -->
+    <div class="question-card bg-gray-900 p-6 rounded-lg mb-8 glow">
+      <img src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg" alt="Team Working on Technology" class="w-full h-48 object-cover rounded-lg mb-4 floating" onerror="this.src='https://images.pexels.com/photos/3184297/pexels-photo-3184297.jpeg';">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-300">
+        1. What job or career are you interested in?
+        <span class="tooltip"><span class="text-blue-500">[?]</span>
+          <span class="tooltiptext" data-text="Tell us about a job you want to do in the future.">Tell us about a job you want to do in the future. <span class="read-aloud">[Read]</span></span>
+        </span>
+      </h2>
+      <textarea id="q1" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., Teacher, Nurse, Software Developer" maxlength="500" aria-label="Enter your career interest"></textarea>
+      <p id="q1-error" class="text-red-400 text-sm mt-2 hidden">Please provide a valid career.</p>
+      <div id="q1-suggestions" class="mt-2 text-sm"></div>
+      <p id="q1-counter" class="char-counter">0/500 characters</p>
+
+      <h2 class="text-2xl font-semibold mt-6 mb-4 text-blue-300">
+        2. Why are you interested in it?
+        <span class="tooltip"><span class="text-blue-500">[?]</span>
+          <span class="tooltiptext" data-text="Explain why you like this job.">Explain why you like this job. <span class="read-aloud">[Read]</span></span>
+        </span>
+      </h2>
+      <textarea id="q2" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., I love new ideas, I want to fix big problems" maxlength="500" aria-label="Enter why you are interested in this career"></textarea>
+      <p id="q2-error" class="text-red-400 text-sm mt-2 hidden">Please provide a reason.</p>
+      <div id="q2-suggestions" class="mt-2 text-sm"></div>
+      <p id="q2-counter" class="char-counter">0/500 characters</p>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="question-card bg-gray-900 p-6 rounded-lg mb-8 glow">
+      <img src="https://images.pexels.com/photos/414860/pexels-photo-414860.jpeg" alt="Renewable Energy" class="w-full h-48 object-cover rounded-lg mb-4 floating" onerror="this.src='https://images.pexels.com/photos/1632790/pexels-photo-1632790.jpeg';">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-300">
+        3. Which SDG is related to it?
+        <span class="tooltip"><span class="text-blue-500">[?]</span>
+          <span class="tooltiptext" data-text="SDG means Sustainable Development Goals, like helping the environment or reducing poverty.">SDG means Sustainable Development Goals, like helping the environment or reducing poverty. <span class="read-aloud">[Read]</span></span>
+        </span>
+      </h2>
+      <select id="q3" class="w-full p-4 rounded-lg bg-gray-800 text-white border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Select a Sustainable Development Goal">
+        <option value="">Select an SDG</option>
+        <option value="No Poverty">No Poverty</option>
+        <option value="Zero Hunger">Zero Hunger</option>
+        <option value="Good Health and Well-being">Good Health and Well-being</option>
+        <option value="Quality Education">Quality Education</option>
+        <option value="Gender Equality">Gender Equality</option>
+        <option value="Clean Water and Sanitation">Clean Water and Sanitation</option>
+        <option value="Affordable and Clean Energy">Affordable and Clean Energy</option>
+        <option value="Decent Work and Economic Growth">Decent Work and Economic Growth</option>
+        <option value="Industry, Innovation and Infrastructure">Industry, Innovation and Infrastructure</option>
+        <option value="Reduced Inequalities">Reduced Inequalities</option>
+        <option value="Sustainable Cities and Communities">Sustainable Cities and Communities</option>
+        <option value="Responsible Consumption and Production">Responsible Consumption and Production</option>
+        <option value="Climate Action">Climate Action</option>
+        <option value="Life Below Water">Life Below Water</option>
+        <option value="Life on Land">Life on Land</option>
+        <option value="Peace, Justice and Strong Institutions">Peace, Justice and Strong Institutions</option>
+        <option value="Partnerships for the Goals">Partnerships for the Goals</option>
+      </select>
+      <p id="q3-error" class="text-red-400 text-sm mt-2 hidden">Please select an SDG.</p>
+    </div>
+
+    <!-- Question 4 & 5 -->
+    <div class="question-card bg-gray-900 p-6 rounded-lg mb-8 glow">
+      <img src="https://images.pexels.com/photos/159888/pexels-photo-159888.jpeg" alt="Education Technology" class="w-full h-48 object-cover rounded-lg mb-4 floating" onerror="this.src='https://images.pexels.com/photos/3862130/pexels-photo-3862130.jpeg';">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-300">
+        4. Regarding this SDG, is there a problem or topic that you find interesting?
+        <span class="tooltip"><span class="text-blue-500">[?]</span>
+          <span class="tooltiptext" data-text="What issue related to your SDG do you care about?">What issue related to your SDG do you care about? <span class="read-aloud">[Read]</span></span>
+        </span>
+      </h2>
+      <textarea id="q4" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., Less pollution, better schools" maxlength="500" aria-label="Enter a problem or topic related to your SDG"></textarea>
+      <p id="q4-error" class="text-red-400 text-sm mt-2 hidden">Please provide a problem or topic.</p>
+      <div id="q4-suggestions" class="mt-2 text-sm"></div>
+      <p id="q4-counter" class="char-counter">0/500 characters</p>
+
+      <h2 class="text-2xl font-semibold mt-6 mb-4 text-blue-300">
+        5. Do you think AI will make a big difference for this problem or topic in the next 5 years?
+        <span class="tooltip"><span class="text-blue-500">[?]</span>
+          <span class="tooltiptext" data-text="AI means artificial intelligence, like smart computers. How can it help your chosen issue?">AI means artificial intelligence, like smart computers. How can it help your chosen issue? <span class="read-aloud">[Read]</span></span>
+        </span>
+      </h2>
+      <textarea id="q5" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., AI can improve energy, help doctors" maxlength="500" aria-label="Enter how AI might impact your chosen problem"></textarea>
+      <p id="q5-error" class="text-red-400 text-sm mt-2 hidden">Please provide your thoughts on AI's impact.</p>
+      <div id="q5-suggestions" class="mt-2 text-sm"></div>
+      <p id="q5-counter" class="char-counter">0/500 characters</p>
+    </div>
+
+    <button id="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 glow transition duration-300" aria-label="Submit your answers">
+      Submit Your Answers
+    </button>
+
+    <!-- Results Modal -->
+    <div id="results-modal" class="modal" role="dialog" aria-labelledby="modal-title">
+      <div class="modal-content relative glow">
+        <span class="modal-close" aria-label="Close modal">×</span>
+        <h2 id="modal-title" class="text-2xl font-bold mb-4 text-blue-300">Your Career Exploration Summary</h2>
+        <div id="results-content" class="text-indigo-200"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Starfield Animation
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      stars = [];
+      const numStars = 200;
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5,
+          speed: Math.random() * 0.5 + 0.1,
+          opacity: Math.random() * 0.5 + 0.5
+        });
+      }
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+        star.opacity = 0.5 + Math.sin(Date.now() * 0.001 + star.x) * 0.3;
+      });
+      requestAnimationFrame(animateStars);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    animateStars();
+
+    // Language toggle data
+    const languageContent = {
+      standard: {
+        intro: "What is your career and its impact on the world?",
+        q1Placeholder: "e.g., Teacher, Nurse, Software Developer",
+        q2Placeholder: "e.g., Passion for innovation, desire to solve global challenges",
+        q4Placeholder: "e.g., Reducing carbon emissions, improving access to education",
+        q5Placeholder: "e.g., AI could optimize energy grids, improve diagnostics"
+      },
+      simplified: {
+        intro: "What job do you want and how does it help the world?",
+        q1Placeholder: "e.g., Teacher, Nurse, Programmer",
+        q2Placeholder: "e.g., I love new ideas, I want to fix big problems",
+        q4Placeholder: "e.g., Less pollution, better schools",
+        q5Placeholder: "e.g., AI can improve energy, help doctors"
+      }
+    };
+
+    // Enhanced suggestions with common careers
+    const suggestions = {
+      q1: [
+        "Teacher",
+        "Nurse",
+        "Software Developer",
+        "Accountant",
+        "Business Manager",
+        "Doctor",
+        "Engineer",
+        "Marketing Specialist",
+        "Graphic Designer",
+        "Lawyer",
+        "Pharmacist",
+        "Social Worker",
+        "Electrician",
+        "Chef",
+        "Journalist",
+        "Green Energy Engineer",
+        "AI Expert",
+        "Cybersecurity Expert",
+        "Space Engineer",
+        "Smart City Designer",
+        "Robotics Builder",
+        "Eco Architect",
+        "Climate Data Expert",
+        "Urban Farmer"
+      ],
+      q2: [
+        "I love new technology",
+        "I want to solve big problems",
+        "I care about the environment",
+        "I like to create new things",
+        "I’m excited about space",
+        "I want fair AI",
+        "I like city planning",
+        "I want to help people’s health"
+      ],
+      q4: [
+        "Less air pollution",
+        "More clean water",
+        "Better schools for all",
+        "Safer farming",
+        "Fair healthcare",
+        "Stop climate change",
+        "Save ocean life",
+        "Protect forests"
+      ],
+      q5: [
+        "AI can save resources",
+        "AI can predict better",
+        "AI helps doctors",
+        "AI plans cities",
+        "AI improves schools",
+        "AI speeds up science",
+        "AI helps the environment",
+        "AI makes tech safer"
+      ]
+    };
+
+    // Language toggle functionality
+    const languageToggle = document.getElementById('language-toggle');
+    const introText = document.getElementById('intro-text');
+    const textareas = {
+      q1: document.getElementById('q1'),
+      q2: document.getElementById('q2'),
+      q4: document.getElementById('q4'),
+      q5: document.getElementById('q5')
+    };
+
+    function updateLanguage(lang) {
+      introText.textContent = languageContent[lang].intro;
+      Object.keys(textareas).forEach(id => {
+        const placeholderKey = `${id}Placeholder`;
+        if (textareas[id].value === '') {
+          textareas[id].placeholder = languageContent[lang][placeholderKey];
+        }
+      });
+    }
+
+    languageToggle.addEventListener('change', () => {
+      updateLanguage(languageToggle.value);
+    });
+
+    // Initialize with standard English
+    updateLanguage('standard');
+
+    // Character counter and real-time validation
+    function updateCharCounterAndValidate(inputId, counterId, errorId) {
+      const input = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+      const error = document.getElementById(errorId);
+      input.addEventListener('input', () => {
+        counter.textContent = `${input.value.length}/500 characters`;
+        if (input.value.trim().length === 0) {
+          error.classList.remove('hidden');
+        } else {
+          error.classList.add('hidden');
+        }
+      });
+    }
+
+    updateCharCounterAndValidate('q1', 'q1-counter', 'q1-error');
+    updateCharCounterAndValidate('q2', 'q2-counter', 'q2-error');
+    updateCharCounterAndValidate('q4', 'q4-counter', 'q4-error');
+    updateCharCounterAndValidate('q5', 'q5-counter', 'q5-error');
+
+    // Read aloud functionality
+    document.querySelectorAll('.read-aloud').forEach(button => {
+      button.addEventListener('click', () => {
+        const text = button.parentElement.getAttribute('data-text');
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      });
+    });
+
+    function sanitizeInput(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function checkGrammar(text) {
+      const commonMistakes = {
+        "i ": "I ",
+        "dont": "don't",
+        "cant": "can't",
+        "wont": "won't",
+        "alot": "a lot",
+        "teh": "the",
+        "recieve": "receive",
+        "seperate": "separate"
+      };
+      let correctedText = text;
+      Object.keys(commonMistakes).forEach(mistake => {
+        const regex = new RegExp(`\\b${mistake}\\b`, "gi");
+        correctedText = correctedText.replace(regex, commonMistakes[mistake]);
+      });
+      return correctedText;
+    }
+
+    function showSuggestions(inputId, suggestionsDivId) {
+      const input = document.getElementById(inputId);
+      const suggestionsDiv = document.getElementById(suggestionsDivId);
+      input.addEventListener("input", () => {
+        const text = sanitizeInput(input.value);
+        const corrected = checkGrammar(text);
+        if (corrected !== text) {
+          input.value = corrected;
+        }
+        suggestionsDiv.innerHTML = "";
+        if (text.length >= 2) {
+          const filteredSuggestions = suggestions[inputId]
+            .filter(s => s.toLowerCase().includes(text.toLowerCase()))
+            .slice(0, 5);
+          filteredSuggestions.forEach(suggestion => {
+            const span = document.createElement("span");
+            span.className = "suggestion";
+            span.textContent = suggestion;
+            span.addEventListener("click", () => {
+              input.value = suggestion;
+              suggestionsDiv.innerHTML = "";
+              document.getElementById(`${inputId}-counter`).textContent = `${input.value.length}/500 characters`;
+              document.getElementById(`${inputId}-error`).classList.add('hidden');
+            });
+            suggestionsDiv.appendChild(span);
+          });
+        }
+      });
+    }
+
+    showSuggestions("q1", "q1-suggestions");
+    showSuggestions("q2", "q2-suggestions");
+    showSuggestions("q4", "q4-suggestions");
+    showSuggestions("q5", "q5-suggestions");
+
+    // Modal functionality with keyboard accessibility
+    const modal = document.getElementById("results-modal");
+    const modalContent = document.getElementById("results-content");
+    const closeModal = document.querySelector(".modal-close");
+
+    closeModal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    window.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.style.display === "flex") {
+        modal.style.display = "none";
+      }
+    });
+
+    // Form validation and submission
+    document.getElementById("submit").addEventListener("click", () => {
+      const inputs = ["q1", "q2", "q3", "q4", "q5"];
+      let valid = true;
+      const answers = {};
+      inputs.forEach(id => {
+        const input = document.getElementById(id);
+        const error = document.getElementById(`${id}-error`);
+        const value = sanitizeInput(input.value.trim());
+        if (!value || (id === "q3" && value === "")) {
+          error.classList.remove("hidden");
+          valid = false;
+        } else {
+          error.classList.add("hidden");
+          answers[id] = value;
+        }
+      });
+
+      if (valid) {
+        // Generate results summary
+        modalContent.innerHTML = `
+          <p><strong>1. Career:</strong> ${answers.q1}</p>
+          <p><strong>2. Motivation:</strong> ${answers.q2}</p>
+          <p><strong>3. SDG:</strong> ${answers.q3}</p>
+          <p><strong>4. Problem/Topic:</strong> ${answers.q4}</p>
+          <p><strong>5. AI Impact:</strong> ${answers.q5}</p>
+          <p class="mt-4 text-blue-300">Your journey to a futuristic career is set! Download your answers below.</p>
+        `;
+        modal.style.display = "flex";
+
+        // Generate downloadable file
+        const content = `
+Career Explorer Answers
+=============================
+1. What job or career are you interested in?
+${answers.q1}
+
+2. Why are you interested in it?
+${answers.q2}
+
+3. Which SDG is related to it?
+${answers.q3}
+
+4. Regarding this SDG, is there a problem or topic that you find interesting?
+${answers.q4}
+
+5. Do you think AI will make a big difference for this problem or topic in the next 5 years?
+${answers.q5}
+        `;
+        const blob = new Blob([content], { type: "text/plain" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Career_Explorer_Answers.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } else {
+        alert("Error: Please complete all fields before submitting.");
+      }
+    });
+  </script>
+</body>
+</html>
