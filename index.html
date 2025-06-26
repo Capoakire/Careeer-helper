@@ -226,7 +226,7 @@
       <p id="q3-error" class="text-red-400 text-sm mt-2 hidden">Please select an SDG.</p>
     </div>
 
-    <!-- Question 4 & 5 -->
+    <!-- Question 4 -->
     <div class="question-card bg-gray-900 p-6 rounded-lg mb-8 glow">
       <img src="https://images.pexels.com/photos/1064658/pexels-photo-1064658.jpeg" alt="Sustainable Agriculture" class="w-full h-48 object-cover rounded-lg mb-4 floating" onerror="this.src='https://images.pexels.com/photos/4406327/pexels-photo-4406327.jpeg';">
       <h2 class="text-2xl font-semibold mb-4 text-blue-300">
@@ -241,17 +241,7 @@
       <p id="q4-counter" class="char-counter">0/500 characters, 0 words</p>
 
       <h2 class="text-2xl font-semibold mt-6 mb-4 text-blue-300">
-        5. Do you think AI will make a big difference for this problem or topic in the next 5 years?
-        <span class="tooltip"><span class="text-blue-500">[?]</span>
-          <span class="tooltiptext" data-text="AI means artificial intelligence, like smart computers. How can it help your chosen issue?">AI means artificial intelligence, like smart computers. How can it help your chosen issue? <span class="read-aloud">[Read]</span></span>
-        </span>
-      </h2>
-      <textarea id="q5" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., AI can save energy, help doctors" maxlength="500" aria-label="Enter how AI might impact your chosen problem"></textarea>
-      <p id="q5-error" class="text-red-400 text-sm mt-2 hidden">Please write at least 15 words.</p>
-      <div id="q5-suggestions" class="mt-2 text-sm"></div>
-      <p id="q5-counter" class="char-counter">0/500 characters, 0 words</p>
-    </div>
-
+      
     <button id="submit" class="w-full py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 glow transition duration-300" aria-label="Submit your answers">
       Submit Your Answers
     </button>
@@ -320,14 +310,12 @@
         q1Placeholder: "e.g., Teacher, Nurse, Software Developer",
         q2Placeholder: "e.g., Passion for innovation, desire to solve global challenges",
         q4Placeholder: "e.g., Reducing carbon emissions, improving access to education",
-        q5Placeholder: "e.g., AI could optimize energy grids, improve diagnostics"
       },
       simplified: {
         intro: "What job do you want?",
         q1Placeholder: "e.g., Teacher, Nurse, Coder",
         q2Placeholder: "e.g., I like helping people, I want to make things better",
         q4Placeholder: "e.g., Cleaner air, more schools",
-        q5Placeholder: "e.g., AI can save energy, help doctors"
       }
     };
 
@@ -379,16 +367,6 @@
         "Save ocean animals",
         "Protect forests"
       ],
-      q5: [
-        "AI can save energy",
-        "AI can predict things",
-        "AI helps doctors",
-        "AI plans cities",
-        "AI helps schools",
-        "AI makes science faster",
-        "AI helps the environment",
-        "AI makes tech safe"
-      ]
     };
 
     // Language toggle functionality
@@ -398,7 +376,6 @@
       q1: document.getElementById('q1'),
       q2: document.getElementById('q2'),
       q4: document.getElementById('q4'),
-      q5: document.getElementById('q5')
     };
 
     function updateLanguage(lang) {
@@ -443,7 +420,6 @@
     updateCharCounterAndValidate('q1', 'q1-counter', 'q1-error');
     updateCharCounterAndValidate('q2', 'q2-counter', 'q2-error', 15);
     updateCharCounterAndValidate('q4', 'q4-counter', 'q4-error', 15);
-    updateCharCounterAndValidate('q5', 'q5-counter', 'q5-error', 15);
 
     // Read aloud functionality
     document.querySelectorAll('.read-aloud').forEach(button => {
@@ -516,7 +492,6 @@
     showSuggestions("q1", "q1-suggestions");
     showSuggestions("q2", "q2-suggestions");
     showSuggestions("q4", "q4-suggestions");
-    showSuggestions("q5", "q5-suggestions");
 
     // Modal functionality with keyboard accessibility
     const modal = document.getElementById("results-modal");
@@ -567,7 +542,7 @@
           <p><strong>3. SDG:</strong> ${answers.q3}</p>
           <p><strong>4. Problem/Topic:</strong> ${answers.q4}</p>
           <p><strong>5. AI Impact:</strong> ${answers.q5}</p>
-          <p class="mt-4 text-blue-300">Your journey to a futuristic career is set! Download your answers below.</p>
+          <p class="mt-4 text-blue-300">Your journey to a futuristic career is set! You can download your answers below.</p>
         `;
         modal.style.display = "flex";
 
@@ -586,9 +561,6 @@ ${answers.q3}
 
 4. Regarding this SDG, is there a problem or topic that you find interesting?
 ${answers.q4}
-
-5. Do you think AI will make a big difference for this problem or topic in the next 5 years?
-${answers.q5}
         `;
         const blob = new Blob([content], { type: "text/plain" });
         const url = window.URL.createObjectURL(blob);
