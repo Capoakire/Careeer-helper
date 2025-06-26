@@ -148,6 +148,30 @@
     .read-aloud:hover {
       color: #C7F7F7;
     }
+    .tab {
+      padding: 8px 16px;
+      border: 1px solid #3b82f6;
+      border-bottom: none;
+      background: #1a1a2e;
+      cursor: pointer;
+      color: #a5b4fc;
+      border-radius: 6px 6px 0 0;
+    }
+    .tab.active {
+      background: #3b82f6;
+      color: #e0e7ff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    select {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -172,23 +196,23 @@
     <div class="question-card bg-gray-900 p-6 rounded-lg mb-8 glow">
       <img src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg" alt="Team Working on Technology" class="w-full h-48 object-cover rounded-lg mb-4 floating" onerror="this.src='https://images.pexels.com/photos/3184297/pexels-photo-3184297.jpeg';">
       <h2 class="text-2xl font-semibold mb-4 text-blue-300">
-        1. What job or career are you interested in?
+        1. What job or career are you interested in (or a university major that you think is cool)?
         <span class="tooltip"><span class="text-blue-500">[?]</span>
-          <span class="tooltiptext" data-text="Tell us about a job you want to do in the future.">Tell us about a job you want to do in the future. <span class="read-aloud">[Read]</span></span>
+          <span class="tooltiptext" data-text="Tell us about a job or university major you like.">Tell us about a job or university major you like. <span class="read-aloud">[Read]</span></span>
         </span>
       </h2>
-      <textarea id="q1" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., Teacher, Nurse, Software Developer" maxlength="500" aria-label="Enter your career interest"></textarea>
-      <p id="q1-error" class="text-red-400 text-sm mt-2 hidden">Please provide a valid career.</p>
+      <textarea id="q1" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., Teacher, Nurse, Environmental Science" maxlength="500" aria-label="Enter your career or major interest"></textarea>
+      <p id="q1-error" class="text-red-400 text-sm mt-2 hidden">Please provide a valid career or major.</p>
       <div id="q1-suggestions" class="mt-2 text-sm"></div>
       <p id="q1-counter" class="char-counter">0/500 characters</p>
 
       <h2 class="text-2xl font-semibold mt-6 mb-4 text-blue-300">
-        2. Why are you interested in it?
+        2. Why are you interested in it (anything you like in particular about the above)? (15 or more words)
         <span class="tooltip"><span class="text-blue-500">[?]</span>
-          <span class="tooltiptext" data-text="Explain why you like this job.">Explain why you like this job. <span class="read-aloud">[Read]</span></span>
+          <span class="tooltiptext" data-text="Explain why you like this job or major.">Explain why you like this job or major. <span class="read-aloud">[Read]</span></span>
         </span>
       </h2>
-      <textarea id="q2" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., I like helping people, I want to make things better" maxlength="500" aria-label="Enter why you are interested in this career"></textarea>
+      <textarea id="q2" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., I like helping people, I want to solve environmental problems" maxlength="500" aria-label="Enter why you are interested in this career or major"></textarea>
       <p id="q2-error" class="text-red-400 text-sm mt-2 hidden">Please write at least 15 words.</p>
       <div id="q2-suggestions" class="mt-2 text-sm"></div>
       <p id="q2-counter" class="char-counter">0/500 characters, 0 words</p>
@@ -198,44 +222,56 @@
     <div class="question-card bg-gray-900 p-6 rounded-lg mb-8 glow">
       <img src="https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg" alt="Clean Water" class="w-full h-48 object-cover rounded-lg mb-4 floating" onerror="this.src='https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg';">
       <h2 class="text-2xl font-semibold mb-4 text-blue-300">
-        3. Which SDG is related to it?
+        3. Which SDG goal is connected to/related to it?
         <span class="tooltip"><span class="text-blue-500">[?]</span>
-          <span class="tooltiptext" data-text="SDG means Sustainable Development Goals, like helping the environment or reducing poverty.">SDG means Sustainable Development Goals, like helping the environment or reducing poverty. <span class="read-aloud">[Read]</span></span>
+          <span class="tooltiptext" data-text="Pick an SDG number and name, then choose its goal.">Pick an SDG number and name, then choose its goal. <span class="read-aloud">[Read]</span></span>
         </span>
       </h2>
-      <select id="q3" class="w-full p-4 rounded-lg bg-gray-800 text-white border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Select a Sustainable Development Goal">
-        <option value="">Select an SDG</option>
-        <option value="No Poverty">No Poverty</option>
-        <option value="Zero Hunger">Zero Hunger</option>
-        <option value="Good Health and Well-being">Good Health and Well-being</option>
-        <option value="Quality Education">Quality Education</option>
-        <option value="Gender Equality">Gender Equality</option>
-        <option value="Clean Water and Sanitation">Clean Water and Sanitation</option>
-        <option value="Affordable and Clean Energy">Affordable and Clean Energy</option>
-        <option value="Decent Work and Economic Growth">Decent Work and Economic Growth</option>
-        <option value="Industry, Innovation and Infrastructure">Industry, Innovation and Infrastructure</option>
-        <option value="Reduced Inequalities">Reduced Inequalities</option>
-        <option value="Sustainable Cities and Communities">Sustainable Cities and Communities</option>
-        <option value="Responsible Consumption and Production">Responsible Consumption and Production</option>
-        <option value="Climate Action">Climate Action</option>
-        <option value="Life Below Water">Life Below Water</option>
-        <option value="Life on Land">Life on Land</option>
-        <option value="Peace, Justice and Strong Institutions">Peace, Justice and Strong Institutions</option>
-        <option value="Partnerships for the Goals">Partnerships for the Goals</option>
-      </select>
-      <p id="q3-error" class="text-red-400 text-sm mt-2 hidden">Please select an SDG.</p>
+      <div class="flex space-x-2 mb-4">
+        <button class="tab active" data-tab="sdg-name" role="tab" aria-selected="true">SDG Number and Name</button>
+        <button class="tab" data-tab="sdg-goal" role="tab" aria-selected="false">SDG Goal</button>
+      </div>
+      <div id="sdg-name" class="tab-content active">
+        <select id="q3-sdg" class="w-full p-4 rounded-lg bg-gray-800 text-white border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Select a Sustainable Development Goal">
+          <option value="">Select an SDG</option>
+          <option value="No Poverty">1. No Poverty</option>
+          <option value="Zero Hunger">2. Zero Hunger</option>
+          <option value="Good Health and Well-being">3. Good Health and Well-being</option>
+          <option value="Quality Education">4. Quality Education</option>
+          <option value="Gender Equality">5. Gender Equality</option>
+          <option value="Clean Water and Sanitation">6. Clean Water and Sanitation</option>
+          <option value="Affordable and Clean Energy">7. Affordable and Clean Energy</option>
+          <option value="Decent Work and Economic Growth">8. Decent Work and Economic Growth</option>
+          <option value="Industry, Innovation and Infrastructure">9. Industry, Innovation and Infrastructure</option>
+          <option value="Reduced Inequalities">10. Reduced Inequalities</option>
+          <option value="Sustainable Cities and Communities">11. Sustainable Cities and Communities</option>
+          <option value="Responsible Consumption and Production">12. Responsible Consumption and Production</option>
+          <option value="Climate Action">13. Climate Action</option>
+          <option value="Life Below Water">14. Life Below Water</option>
+          <option value="Life on Land">15. Life on Land</option>
+          <option value="Peace, Justice and Strong Institutions">16. Peace, Justice and Strong Institutions</option>
+          <option value="Partnerships for the Goals">17. Partnerships for the Goals</option>
+        </select>
+      </div>
+      <div id="sdg-goal" class="tab-content">
+        <select id="q3-goal" class="w-full p-4 rounded-lg bg-gray-800 text-white border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" aria-label="Select a goal for the chosen SDG">
+          <option value="">Select a goal</option>
+        </select>
+      </div>
+      <input type="hidden" id="q3" value="">
+      <p id="q3-error" class="text-red-400 text-sm mt-2 hidden">Please select an SDG and its goal.</p>
     </div>
 
     <!-- Question 4 -->
     <div class="question-card bg-gray-900 p-6 rounded-lg mb-8 glow">
       <img src="https://images.pexels.com/photos/1064658/pexels-photo-1064658.jpeg" alt="Sustainable Agriculture" class="w-full h-48 object-cover rounded-lg mb-4 floating" onerror="this.src='https://images.pexels.com/photos/4406327/pexels-photo-4406327.jpeg';">
       <h2 class="text-2xl font-semibold mb-4 text-blue-300">
-        4. Regarding this SDG, is there a problem or topic that you find interesting?
+        4. Regarding this SDG, is there a problem or topic that you find interesting? (15 or more words)
         <span class="tooltip"><span class="text-blue-500">[?]</span>
           <span class="tooltiptext" data-text="What issue related to your SDG do you care about?">What issue related to your SDG do you care about? <span class="read-aloud">[Read]</span></span>
         </span>
       </h2>
-      <textarea id="q4" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., Cleaner air, more schools" maxlength="500" aria-label="Enter a problem or topic related to your SDG"></textarea>
+      <textarea id="q4" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="4" placeholder="e.g., Cleaner air, more schools, better farming" maxlength="500" aria-label="Enter a problem or topic related to your SDG"></textarea>
       <p id="q4-error" class="text-red-400 text-sm mt-2 hidden">Please write at least 15 words.</p>
       <div id="q4-suggestions" class="mt-2 text-sm"></div>
       <p id="q4-counter" class="char-counter">0/500 characters, 0 words</p>
@@ -302,59 +338,148 @@
     resizeCanvas();
     animateStars();
 
+    // SDG Goals Data (simplified for A2 level)
+    const sdgGoals = {
+      "No Poverty": [
+        "End poverty in all forms everywhere.",
+        "Ensure social protection for the poor.",
+        "Give equal access to resources."
+      ],
+      "Zero Hunger": [
+        "End hunger and improve food security.",
+        "Promote sustainable farming.",
+        "Improve nutrition for all."
+      ],
+      "Good Health and Well-being": [
+        "Ensure healthy lives for all.",
+        "Reduce diseases and deaths.",
+        "Provide access to healthcare."
+      ],
+      "Quality Education": [
+        "Provide good education for everyone.",
+        "Ensure equal access to schools.",
+        "Promote learning for all."
+      ],
+      "Gender Equality": [
+        "Give equal rights to women and men.",
+        "End discrimination against women.",
+        "Empower women and girls."
+      ],
+      "Clean Water and Sanitation": [
+        "Ensure clean water and toilets for all.",
+        "Improve water quality.",
+        "Protect water resources."
+      ],
+      "Affordable and Clean Energy": [
+        "Provide clean and cheap energy.",
+        "Increase renewable energy use.",
+        "Improve energy access for all."
+      ],
+      "Decent Work and Economic Growth": [
+        "Create good jobs and grow economies.",
+        "Promote fair work conditions.",
+        "Support small businesses."
+      ],
+      "Industry, Innovation and Infrastructure": [
+        "Build strong industries and new ideas.",
+        "Promote sustainable technology.",
+        "Improve infrastructure for all."
+      ],
+      "Reduced Inequalities": [
+        "Make life fairer for everyone.",
+        "Reduce income gaps.",
+        "Promote equal opportunities."
+      ],
+      "Sustainable Cities and Communities": [
+        "Make cities safe and green.",
+        "Provide affordable housing.",
+        "Improve public transport."
+      ],
+      "Responsible Consumption and Production": [
+        "Use resources wisely.",
+        "Reduce waste and pollution.",
+        "Promote sustainable practices."
+      ],
+      "Climate Action": [
+        "Fight climate change and its effects.",
+        "Reduce greenhouse gas emissions.",
+        "Educate about climate solutions."
+      ],
+      "Life Below Water": [
+        "Protect oceans and sea life.",
+        "Reduce ocean pollution.",
+        "Promote sustainable fishing."
+      ],
+      "Life on Land": [
+        "Save forests and animals on land.",
+        "Stop deforestation.",
+        "Protect biodiversity."
+      ],
+      "Peace, Justice and Strong Institutions": [
+        "Promote peace and fair laws.",
+        "Reduce violence and corruption.",
+        "Support strong institutions."
+      ],
+      "Partnerships for the Goals": [
+        "Work together to achieve these goals.",
+        "Support global partnerships.",
+        "Share resources and knowledge."
+      ]
+    };
+
     // Language toggle data
     const languageContent = {
       standard: {
-        intro: "What is your career and its impact on the world?",
-        q1Placeholder: "e.g., Teacher, Nurse, Software Developer",
-        q2Placeholder: "e.g., Passion for innovation, desire to solve global challenges",
-        q4Placeholder: "e.g., Reducing carbon emissions, improving access to education"
+        intro: "What is your career or major and its impact on the world?",
+        q1Placeholder: "e.g., Teacher, Nurse, Environmental Science",
+        q2Placeholder: "e.g., I enjoy helping others, I want to solve global challenges",
+        q4Placeholder: "e.g., Reducing carbon emissions, improving access to education, better farming"
       },
       simplified: {
-        intro: "What job do you want?",
-        q1Placeholder: "e.g., Teacher, Nurse, Coder",
-        q2Placeholder: "e.g., I like helping people, I want to make things better",
-        q4Placeholder: "e.g., Cleaner air, more schools"
+        intro: "What job or major do you want?",
+        q1Placeholder: "e.g., Teacher, Nurse, Environmental Science",
+        q2Placeholder: "e.g., I like helping people, I want to save the environment",
+        q4Placeholder: "e.g., Cleaner air, more schools, better farming"
       }
     };
 
-    // Enhanced suggestions with common careers
+    // Enhanced suggestions with careers and majors
     const suggestions = {
       q1: [
         "Teacher",
         "Nurse",
         "Software Developer",
-        "Accountant",
-        "Business Manager",
+        "Environmental Science",
+        "Business Administration",
         "Doctor",
-        "Engineer",
-        "Marketing Specialist",
-        "Graphic Designer",
-        "Lawyer",
-        "Pharmacist",
-        "Social Worker",
-        "Electrician",
-        "Chef",
-        "Journalist",
+        "Mechanical Engineering",
+        "Marketing",
+        "Graphic Design",
+        "Law",
+        "Pharmacy",
+        "Social Work",
+        "Electrical Engineering",
+        "Culinary Arts",
+        "Journalism",
         "Green Energy Engineer",
-        "AI Expert",
-        "Cybersecurity Expert",
-        "Space Engineer",
-        "Smart City Designer",
-        "Robotics Builder",
-        "Eco Architect",
-        "Climate Data Expert",
-        "Urban Farmer"
+        "Computer Science",
+        "Cybersecurity",
+        "Aerospace Engineering",
+        "Urban Planning",
+        "Robotics",
+        "Architecture",
+        "Data Science",
+        "Agricultural Science"
       ],
       q2: [
         "I like helping people",
-        "I want to make things better",
-        "I love the environment",
-        "I enjoy making new things",
-        "I like space",
-        "I want fair technology",
-        "I enjoy city planning",
-        "I want to help health"
+        "I want to solve environmental problems",
+        "I love learning about technology",
+        "I enjoy creating new things",
+        "I want to make cities better",
+        "I like studying health",
+        "I want to protect nature",
+        "I enjoy working with data"
       ],
       q4: [
         "Cleaner air",
@@ -409,7 +534,7 @@
         counter.textContent = `${charCount}/500 characters${minWords > 0 ? `, ${wordCount} words` : ''}`;
         if (input.value.trim().length === 0 || (minWords > 0 && wordCount < minWords)) {
           error.classList.remove('hidden');
-          error.textContent = minWords > 0 ? `Please write at least ${minWords} words.` : `Please provide a valid ${inputId === 'q1' ? 'career' : 'response'}.`;
+          error.textContent = minWords > 0 ? `Please write at least ${minWords} words.` : `Please provide a valid ${inputId === 'q1' ? 'career or major' : 'response'}.`;
         } else {
           error.classList.add('hidden');
         }
@@ -419,6 +544,61 @@
     updateCharCounterAndValidate('q1', 'q1-counter', 'q1-error');
     updateCharCounterAndValidate('q2', 'q2-counter', 'q2-error', 15);
     updateCharCounterAndValidate('q4', 'q4-counter', 'q4-error', 15);
+
+    // Tabbed interface for Question 3
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const sdgSelect = document.getElementById('q3-sdg');
+    const goalSelect = document.getElementById('q3-goal');
+    const q3Input = document.getElementById('q3');
+    const q3Error = document.getElementById('q3-error');
+
+    function switchTab(tabId) {
+      tabs.forEach(tab => {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+      });
+      tabContents.forEach(content => content.classList.remove('active'));
+      document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+      document.querySelector(`[data-tab="${tabId}"]`).setAttribute('aria-selected', 'true');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+
+    function updateGoals() {
+      const selectedSDG = sdgSelect.value;
+      goalSelect.innerHTML = '<option value="">Select a goal</option>';
+      if (selectedSDG && sdgGoals[selectedSDG]) {
+        sdgGoals[selectedSDG].forEach(goal => {
+          const option = document.createElement('option');
+          option.value = goal;
+          option.textContent = goal;
+          goalSelect.appendChild(option);
+        });
+      }
+      updateQ3Value();
+    }
+
+    function updateQ3Value() {
+      const sdg = sdgSelect.value;
+      const goal = goalSelect.value;
+      if (sdg && goal) {
+        q3Input.value = `${sdg}: ${goal}`;
+        q3Error.classList.add('hidden');
+      } else {
+        q3Input.value = '';
+      }
+    }
+
+    sdgSelect.addEventListener('change', () => {
+      updateGoals();
+      switchTab('sdg-goal');
+    });
+
+    goalSelect.addEventListener('change', updateQ3Value);
 
     // Read aloud functionality
     document.querySelectorAll('.read-aloud').forEach(button => {
@@ -521,11 +701,15 @@
       inputs.forEach(id => {
         const input = document.getElementById(id);
         const error = document.getElementById(`${id}-error`);
-        const value = sanitizeInput(input.value.trim());
+        let value = sanitizeInput(input.value.trim());
         const wordCount = countWords(value);
-        if (!value || (id === "q3" && value === "") || (["q2", "q4"].includes(id) && wordCount < 15)) {
+        if (id === "q3") {
+          // Extract only the SDG name, excluding the goal
+          value = value.split(":")[0].trim();
+        }
+        if (!value || (id === "q3" && (!input.value || input.value === "")) || (["q2", "q4"].includes(id) && wordCount < 15)) {
           error.classList.remove("hidden");
-          error.textContent = ["q2", "q4"].includes(id) ? "Please write at least 15 words." : `Please provide a valid ${id === "q1" ? "career" : "SDG"}.`;
+          error.textContent = ["q2", "q4"].includes(id) ? "Please write at least 15 words." : `Please provide a valid ${id === "q1" ? "career or major" : "SDG and goal"}.`;
           valid = false;
         } else {
           error.classList.add("hidden");
@@ -536,20 +720,20 @@
       if (valid) {
         // Generate results summary and essay guide
         modalContent.innerHTML = `
-          <p><strong>1. Career:</strong> ${answers.q1}</p>
+          <p><strong>1. Career or Major:</strong> ${answers.q1}</p>
           <p><strong>2. Motivation:</strong> ${answers.q2}</p>
           <p><strong>3. SDG:</strong> ${answers.q3}</p>
           <p><strong>4. Problem/Topic:</strong> ${answers.q4}</p>
           <p class="mt-4 text-blue-300">Your journey to a futuristic career is set! Download your answers below.</p>
-          <h3 class="text-xl font-semibold mt-6 mb-2 text-blue-300">How to Write an Essay at Home</h3>
-          <div data-text="Write a four-part essay using your answers. Part 1: Introduce your job and why you like it. Use answers 1 and 2. Part 2: Say which SDG it helps. Use answer 3. Part 3: Talk about a problem you care about. Use answer 4. Part 4: Finish by saying why this job and SDG matter to you. Example: My job is a nurse. I like helping people feel better. It helps Good Health and Well-being. I care about fair healthcare for all. Being a nurse is important because it saves lives and makes the world better. Practice this at home during holidays!"><p class="mb-2">Write a four-part essay using your answers.</p>
+          <h3 class="text-xl font-semibold mt-6 mb-2 text-blue-300">Essay Introduction Practice at Home (50–75 words)</h3>
+          <div data-text="Write a short essay introduction (50–75 words) using your answers. Part 1: Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2. Part 2: State which SDG goal it helps. Use answer 3. Part 3: Discuss a problem linked to the fact. Use answer 4. Part 4: Explain why this job or major and SDG matter to you. Example: Many people lack clean water. I want to study Environmental Science to protect nature. It connects to Clean Water and Sanitation. I care about making water safe for all. This major and SDG are important because clean water helps everyone live better. Practice this at home during holidays!"><p class="mb-2">Write a short essay introduction (50–75 words) using your answers.</p>
           <ul class="list-disc pl-5 mb-2">
-            <li><strong>Part 1:</strong> Introduce your job and why you like it. Use answers 1 and 2.</li>
-            <li><strong>Part 2:</strong> Say which SDG it helps. Use answer 3.</li>
-            <li><strong>Part 3:</strong> Talk about a problem you care about. Use answer 4.</li>
-            <li><strong>Part 4:</strong> Finish by saying why this job and SDG matter to you.</li>
+            <li><strong>Part 1:</strong> Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2.</li>
+            <li><strong>Part 2:</strong> State which SDG goal it helps. Use answer 3.</li>
+            <li><strong>Part 3:</strong> Discuss a problem linked to the fact. Use answer 4.</li>
+            <li><strong>Part 4:</strong> Explain why this job or major and SDG matter to you.</li>
           </ul>
-          <p><strong>Example:</strong> My job is a nurse. I like helping people feel better. It helps Good Health and Well-being. I care about fair healthcare for all. Being a nurse is important because it saves lives and makes the world better.</p>
+          <p><strong>Example:</strong> Many people lack clean water. I want to study Environmental Science to protect nature. It connects to Clean Water and Sanitation. I care about making water safe for all. This major and SDG are important because clean water helps everyone live better.</p>
           <p class="mt-2">Practice this at home during holidays! <span class="read-aloud">[Read]</span></p></div>
         `;
         modal.style.display = "flex";
@@ -567,13 +751,13 @@
         const content = `
 Career Explorer Answers
 =============================
-1. What job or career are you interested in?
+1. What job or career are you interested in (or a university major that you think is cool)?
 ${answers.q1}
 
-2. Why are you interested in it?
+2. Why are you interested in it (anything you like in particular about the above)?
 ${answers.q2}
 
-3. Which SDG is related to it?
+3. Which SDG goal is connected to/related to it?
 ${answers.q3}
 
 4. Regarding this SDG, is there a problem or topic that you find interesting?
@@ -589,7 +773,7 @@ ${answers.q4}
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       } else {
-        alert("Error: Please complete all fields and write at least 15 words for questions 2 and 4.");
+        alert("Error: Please complete all fields, select an SDG and its goal, and write at least 15 words for questions 2 and 4.");
       }
     });
   </script>
