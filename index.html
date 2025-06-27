@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Career explorer</title>
+  <title>Career Explorer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -186,7 +186,7 @@
       </select>
     </div>
     <h1 class="text-4xl md:text-5xl font-bold text-center mb-8 text-blue-300 glow">
-      Career explorer: Chart your future
+      Career Explorer: Chart Your Future
     </h1>
     <p class="text-center text-lg mb-12 text-indigo-200" id="intro-text">
       What is your career and its impact on the world?
@@ -693,7 +693,7 @@
       }
     });
 
-    // Form validation and submission
+    // Form validation and submission with download
     document.getElementById("submit").addEventListener("click", () => {
       const inputs = ["q1", "q2", "q3", "q4"];
       let valid = true;
@@ -724,7 +724,7 @@
           <p><strong>2. Motivation:</strong> ${answers.q2}</p>
           <p><strong>3. SDG:</strong> ${answers.q3}</p>
           <p><strong>4. Problem/Topic:</strong> ${answers.q4}</p>
-          <p class="mt-4 text-blue-300">Your journey to a futuristic career is set! Proceed to the essay checker.</p>
+          <p class="mt-4 text-blue-300">Your answers have been downloaded! Proceed to the essay checker in the new tab.</p>
           <h3 class="text-xl font-semibold mt-6 mb-2 text-blue-300">Essay Introduction Practice (75–100 words)</h3>
           <div data-text="Write a short essay introduction (75–100 words) using your answers. Part 1: Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2. Part 2: State which SDG goal it helps. Use answer 3. Part 3: Discuss a problem linked to the fact. Use answer 4. Part 4: Explain why this job or major and SDG matter to you. Example: Many people lack clean water, which harms their health. I want to study Environmental Science because I love protecting nature and solving big problems. This major connects to Clean Water and Sanitation. I care about making water safe for everyone to use. Dirty water causes sickness, and I want to help fix this issue. This major and SDG are important to me because clean water improves lives and helps communities grow stronger and healthier. Practice this in the essay checker page!"><p class="mb-2">Write a short essay introduction (75–100 words) using your answers.</p>
           <ul class="list-disc pl-5 mb-2">
@@ -746,6 +746,45 @@
           utterance.rate = 0.9;
           window.speechSynthesis.speak(utterance);
         });
+
+        // Trigger download
+        const content = `
+Career Explorer Answers and Essay Guide
+=====================================
+1. What job or career are you interested in (or a university major that you think is cool)?
+${answers.q1}
+
+2. Why are you interested in it (anything you like in particular about the above)?
+${answers.q2}
+
+3. Which SDG goal is connected to/related to it?
+${answers.q3}
+
+4. Regarding this SDG, is there a problem or topic that you find interesting?
+${answers.q4}
+
+Essay Introduction Practice (75–100 words):
+Write a short essay introduction (75–100 words) using your answers above.
+- Part 1: Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2.
+- Part 2: State which SDG goal it helps. Use answer 3.
+- Part 3: Discuss a problem linked to the fact. Use answer 4.
+- Part 4: Explain why this job or major and SDG matter to you.
+
+Example:
+Many people lack clean water, which harms their health. I want to study Environmental Science because I love protecting nature and solving big problems. This major connects to Clean Water and Sanitation. I care about making water safe for everyone to use. Dirty water causes sickness, and I want to help fix this issue. This major and SDG are important to me because clean water improves lives and helps communities grow stronger and healthier.
+
+Instructions:
+Use the essay checker page opened in the new tab to write and check your 75–100 word essay introduction. Make sure to include all four parts and check that your essay is between 75 and 100 words.
+        `;
+        const blob = new Blob([content], { type: "text/plain" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "Career_Explorer_Answers_and_Essay_Guide.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
 
         // Open essay checker page with answers
         const params = new URLSearchParams();
