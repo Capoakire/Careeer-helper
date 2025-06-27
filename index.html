@@ -189,7 +189,7 @@
       Career Explorer: Chart Your Future
     </h1>
     <p class="text-center text-lg mb-12 text-indigo-200" id="intro-text">
-      What is your career, and its impact on the world?
+      What is your career and its impact on the world?
     </p>
 
     <!-- Question 1 & 2 -->
@@ -479,7 +479,7 @@
         "I want to make cities better",
         "I like studying health",
         "I want to protect nature",
-        "I enjoy working with data."
+        "I enjoy working with data"
       ],
       q4: [
         "Cleaner air",
@@ -718,23 +718,23 @@
       });
 
       if (valid) {
-        // Generate results summary and essay guide
+        // Generate results summary and essay guide in modal
         modalContent.innerHTML = `
           <p><strong>1. Career or Major:</strong> ${answers.q1}</p>
           <p><strong>2. Motivation:</strong> ${answers.q2}</p>
           <p><strong>3. SDG:</strong> ${answers.q3}</p>
           <p><strong>4. Problem/Topic:</strong> ${answers.q4}</p>
-          <p class="mt-4 text-blue-300">Your journey to a futuristic career is set! Download your answers below.</p>
-          <h3 class="text-xl font-semibold mt-6 mb-2 text-blue-300">Essay Introduction Practice at Home (50–75 words)</h3>
-          <div data-text="Write a short essay introduction (50–75 words) using your answers. Part 1: Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2. Part 2: State which SDG goal it helps. Use answer 3. Part 3: Discuss a problem linked to the fact. Use answer 4. Part 4: Explain why this job or major and SDG matter to you. Example: Many people lack clean water. I want to study Environmental Science to protect nature. It connects to Clean Water and Sanitation. I care about making water safe for all. This major and SDG are important because clean water helps everyone live better. Practice this at home during holidays!"><p class="mb-2">Write a short essay introduction (50–75 words) using your answers.</p>
+          <p class="mt-4 text-blue-300">Your journey to a futuristic career is set! Proceed to the essay checker.</p>
+          <h3 class="text-xl font-semibold mt-6 mb-2 text-blue-300">Essay Introduction Practice (75–100 words)</h3>
+          <div data-text="Write a short essay introduction (75–100 words) using your answers. Part 1: Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2. Part 2: State which SDG goal it helps. Use answer 3. Part 3: Discuss a problem linked to the fact. Use answer 4. Part 4: Explain why this job or major and SDG matter to you. Example: Many people lack clean water, which harms their health. I want to study Environmental Science because I love protecting nature and solving big problems. This major connects to Clean Water and Sanitation. I care about making water safe for everyone to use. Dirty water causes sickness, and I want to help fix this issue. This major and SDG are important to me because clean water improves lives and helps communities grow stronger and healthier. Practice this in the essay checker page!"><p class="mb-2">Write a short essay introduction (75–100 words) using your answers.</p>
           <ul class="list-disc pl-5 mb-2">
             <li><strong>Part 1:</strong> Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2.</li>
             <li><strong>Part 2:</strong> State which SDG goal it helps. Use answer 3.</li>
             <li><strong>Part 3:</strong> Discuss a problem linked to the fact. Use answer 4.</li>
             <li><strong>Part 4:</strong> Explain why this job or major and SDG matter to you.</li>
           </ul>
-          <p><strong>Example:</strong> Many people lack clean water. I want to study Environmental Science to protect nature. It connects to Clean Water and Sanitation. I care about making water safe for all. This major and SDG are important because clean water helps everyone live better.</p>
-          <p class="mt-2">Practice this at home during holidays! <span class="read-aloud">[Read]</span></p></div>
+          <p><strong>Example:</strong> Many people lack clean water, which harms their health. I want to study Environmental Science because I love protecting nature and solving big problems. This major connects to Clean Water and Sanitation. I care about making water safe for everyone to use. Dirty water causes sickness, and I want to help fix this issue. This major and SDG are important to me because clean water improves lives and helps communities grow stronger and healthier.</p>
+          <p class="mt-2">Practice this in the essay checker page! <span class="read-aloud">[Read]</span></p></div>
         `;
         modal.style.display = "flex";
 
@@ -747,31 +747,16 @@
           window.speechSynthesis.speak(utterance);
         });
 
-        // Generate downloadable file
-        const content = `
-Career Explorer Answers
-=============================
-1. What job or career are you interested in (or a university major that you think is cool)?
-${answers.q1}
-
-2. Why are you interested in it (anything you like in particular about the above)?
-${answers.q2}
-
-3. Which SDG goal is connected to/related to it?
-${answers.q3}
-
-4. Regarding this SDG, is there a problem or topic that you find interesting?
-${answers.q4}
-        `;
-        const blob = new Blob([content], { type: "text/plain" });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "Career_Explorer_Answers.txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        // Open essay checker page with answers
+        const params = new URLSearchParams();
+        inputs.forEach(id => {
+          let value = answers[id];
+          if (id === 'q3') {
+            value = answers.q3; // Use SDG name only
+          }
+          params.append(id, encodeURIComponent(value));
+        });
+        window.open(`essay-checker.html?${params.toString()}`, '_blank');
       } else {
         alert("Error: Please complete all fields, select an SDG and its goal, and write at least 15 words for questions 2 and 4.");
       }
