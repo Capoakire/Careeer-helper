@@ -261,7 +261,7 @@
     // Download functionality
     document.getElementById('download').addEventListener('click', () => {
       const content = `
-Career Explorer Answers and Essay
+Career explorer answers and essay
 =============================
 1. What job or career are you interested in (or a university major that you think is cool)?
 ${answers.q1}
@@ -275,7 +275,7 @@ ${answers.q3}
 4. Regarding this SDG, is there a problem or topic that you find interesting?
 ${answers.q4}
 
-Essay Introduction:
+Essay introduction:
 ${essayInput.value || 'Not provided'}
       `;
       const blob = new Blob([content], { type: "text/plain" });
