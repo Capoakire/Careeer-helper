@@ -1,0 +1,293 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Essay Introduction Checker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e0e7ff;
+      font-family: 'Orbitron', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .glow {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+    .pulse-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+      opacity: 0.3;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 0.3; }
+    }
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+    textarea {
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #3b82f6;
+    }
+    textarea:focus {
+      outline: none;
+      ring: 2px solid #60a5fa;
+    }
+    .char-counter {
+      color: #C7F7F7;
+      font-size: 0.875rem;
+      margin-top: 4px;
+    }
+    .read-aloud {
+      cursor: pointer;
+      color: #a5b4fc;
+      margin-left: 8px;
+      font-size: 0.875rem;
+    }
+    .read-aloud:hover {
+      color: #C7F7F7;
+    }
+    .feedback {
+      color: #C7F7F7;
+      font-size: 0.875rem;
+      margin-top: 8px;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+  <canvas id="starfield"></canvas>
+  <div class="pulse-bg"></div>
+  <div class="max-w-4xl w-full">
+    <h1 class="text-4xl md:text-5xl font-bold text-center mb-8 text-blue-300 glow">
+      Essay Introduction Checker
+    </h1>
+    <div class="bg-gray-900 p-6 rounded-lg mb-8 glow">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-300">Your Answers</h2>
+      <p><strong>1. Career or Major:</strong> <span id="q1-answer">Loading...</span></p>
+      <p><strong>2. Motivation:</strong> <span id="q2-answer">Loading...</span></p>
+      <p><strong>3. SDG:</strong> <span id="q3-answer">Loading...</span></p>
+      <p><strong>4. Problem/Topic:</strong> <span id="q4-answer">Loading...</span></p>
+    </div>
+    <div class="bg-gray-900 p-6 rounded-lg mb-8 glow">
+      <h2 class="text-2xl font-semibold mb-4 text-blue-300">Essay Introduction Practice (75–100 words)</h2>
+      <div data-text="Write a short essay introduction (75–100 words) using your answers. Part 1: Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2. Part 2: State which SDG goal it helps. Use answer 3. Part 3: Discuss a problem linked to the fact. Use answer 4. Part 4: Explain why this job or major and SDG matter to you. Example: Many people lack clean water, which harms their health. I want to study Environmental Science because I love protecting nature and solving big problems. This major connects to Clean Water and Sanitation. I care about making water safe for everyone to use. Dirty water causes sickness, and I want to help fix this issue. This major and SDG are important to me because clean water improves lives and helps communities grow stronger and healthier. Practice below and check your work!"><p class="mb-2">Write a short essay introduction (75–100 words) using your answers.</p>
+        <ul class="list-disc pl-5 mb-2">
+          <li><strong>Part 1:</strong> Start with an interesting fact linked to later parts. Introduce your job or major and why you like it. Rephrase answers 1 and 2.</li>
+          <li><strong>Part 2:</strong> State which SDG goal it helps. Use answer 3.</li>
+          <li><strong>Part 3:</strong> Discuss a problem linked to the fact. Use answer 4.</li>
+          <li><strong>Part 4:</strong> Explain why this job or major and SDG matter to you.</li>
+        </ul>
+        <p><strong>Example:</strong> Many people lack clean water, which harms their health. I want to study Environmental Science because I love protecting nature and solving big problems. This major connects to Clean Water and Sanitation. I care about making water safe for everyone to use. Dirty water causes sickness, and I want to help fix this issue. This major and SDG are important to me because clean water improves lives and helps communities grow stronger and healthier.</p>
+        <p class="mt-2">Practice below and check your work! <span class="read-aloud">[Read]</span></p>
+      </div>
+      <h3 class="text-xl font-semibold mt-6 mb-4 text-blue-300">Write Your Essay Introduction</h3>
+      <textarea id="essay-input" class="w-full p-4 rounded-lg bg-white text-black border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400" rows="6" placeholder="Write your 75–100 word essay introduction here..." maxlength="500" aria-label="Write your essay introduction"></textarea>
+      <p id="essay-counter" class="char-counter">0/500 characters, 0 words</p>
+      <p id="essay-feedback" class="feedback"></p>
+      <button id="download" class="mt-4 py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 glow transition duration-300" aria-label="Download your answers and essay">Download Answers and Essay</button>
+    </div>
+  </div>
+
+  <script>
+    // Starfield Animation
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      stars = [];
+      const numStars = 200;
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5,
+          speed: Math.random() * 0.5 + 0.1,
+          opacity: Math.random() * 0.5 + 0.5
+        });
+      }
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+        star.y += star.speed;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+        star.opacity = 0.5 + Math.sin(Date.now() * 0.001 + star.x) * 0.3;
+      });
+      requestAnimationFrame(animateStars);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    animateStars();
+
+    // Load answers from URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const answers = {
+      q1: decodeURIComponent(params.get('q1') || 'Not provided'),
+      q2: decodeURIComponent(params.get('q2') || 'Not provided'),
+      q3: decodeURIComponent(params.get('q3') || 'Not provided'),
+      q4: decodeURIComponent(params.get('q4') || 'Not provided')
+    };
+
+    document.getElementById('q1-answer').textContent = answers.q1;
+    document.getElementById('q2-answer').textContent = answers.q2;
+    document.getElementById('q3-answer').textContent = answers.q3;
+    document.getElementById('q4-answer').textContent = answers.q4;
+
+    // Essay input and feedback
+    const essayInput = document.getElementById('essay-input');
+    const essayCounter = document.getElementById('essay-counter');
+    const essayFeedback = document.getElementById('essay-feedback');
+
+    function countWords(text) {
+      return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+    }
+
+    function checkEssayStructure(text) {
+      const feedback = [];
+      const wordCount = countWords(text);
+      if (wordCount < 75 || wordCount > 100) {
+        feedback.push(`Word count: ${wordCount}. Aim for 75–100 words.`);
+      }
+      const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+      if (sentences.length < 4) {
+        feedback.push("Try to include at least 4 sentences for the 4 parts.");
+      }
+      if (!text.toLowerCase().includes(answers.q1.toLowerCase())) {
+        feedback.push("Include your career or major (from Answer 1).");
+      }
+      if (!text.toLowerCase().includes(answers.q3.toLowerCase())) {
+        feedback.push("Mention your SDG (from Answer 3).");
+      }
+      const problemWords = answers.q4.toLowerCase().split(/\s+/);
+      const hasProblem = problemWords.some(word => text.toLowerCase().includes(word));
+      if (!hasProblem) {
+        feedback.push("Include the problem or topic (from Answer 4).");
+      }
+      return feedback.length ? feedback.join(" ") : "Looks good! All parts included.";
+    }
+
+    essayInput.addEventListener('input', () => {
+      const charCount = essayInput.value.length;
+      const wordCount = countWords(essayInput.value);
+      essayCounter.textContent = `${charCount}/500 characters, ${wordCount} words`;
+      essayFeedback.textContent = checkEssayStructure(essayInput.value);
+    });
+
+    // Read aloud functionality
+    document.querySelectorAll('.read-aloud').forEach(button => {
+      button.addEventListener('click', () => {
+        const text = button.parentElement.getAttribute('data-text');
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      });
+    });
+
+    // Download functionality
+    document.getElementById('download').addEventListener('click', () => {
+      const content = `
+Career Explorer Answers and Essay
+=============================
+1. What job or career are you interested in (or a university major that you think is cool)?
+${answers.q1}
+
+2. Why are you interested in it (anything you like in particular about the above)?
+${answers.q2}
+
+3. Which SDG goal is connected to/related to it?
+${answers.q3}
+
+4. Regarding this SDG, is there a problem or topic that you find interesting?
+${answers.q4}
+
+Essay Introduction:
+${essayInput.value || 'Not provided'}
+      `;
+      const blob = new Blob([content], { type: "text/plain" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Career_Explorer_Answers_and_Essay.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
