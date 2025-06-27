@@ -703,10 +703,6 @@
         const error = document.getElementById(`${id}-error`);
         let value = sanitizeInput(input.value.trim());
         const wordCount = countWords(value);
-        if (id === "q3") {
-          // Extract only the SDG name, excluding the goal
-          value = value.split(":")[0].trim();
-        }
         if (!value || (id === "q3" && (!input.value || input.value === "")) || (["q2", "q4"].includes(id) && wordCount < 15)) {
           error.classList.remove("hidden");
           error.textContent = ["q2", "q4"].includes(id) ? "Please write at least 15 words." : `Please provide a valid ${id === "q1" ? "career or major" : "SDG and goal"}.`;
@@ -789,11 +785,7 @@ Use the essay checker page opened in the new tab to write and check your 75–10
         // Open essay checker page with answers
         const params = new URLSearchParams();
         inputs.forEach(id => {
-          let value = answers[id];
-          if (id === 'q3') {
-            value = answers.q3; // Use SDG name only
-          }
-          params.append(id, encodeURIComponent(value));
+          params.append(id, encodeURIComponent(answers[id]));
         });
         window.open(`essay-checker.html?${params.toString()}`, '_blank');
       } else {
